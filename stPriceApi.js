@@ -11,52 +11,25 @@ app.use(cors())
 
 let keyenter;
 
-app.get("/:key",(req,res)=>{
-    var id=req.params.key
-    
-    con.query(`Select *from productdb where searchKey LIKE '%${id}%'`,(error,result)=>{
 
-        if(error)
-        {   
-res.send("error")
-        }else{
-res.send(result)
-        }
-        console.log(result)
-    })
-
-    
-});
-app.get("/leftproductdb/:key",(req,res)=>{
-    var id=req.params.key
-    con.query(`Select *from leftproductdb where searchKey LIKE '%${id}%'`,(error,result)=>{
-
+app.get('/amhead',async(req,res)=>{
+    console.log("get")
+    con.query("SELECT * FROM amhead",(error,result)=>{
+console.log("hi")
         if(error)
         {
 res.send("error")
         }else{
 res.send(result)
+console.log("this is outcou",result)
         }
-        console.log(result)
+        console.log("this is outcou",result)
     })
 
     
 });
-app.get("/amhead",(req,res)=>{
-    con.query("Select *from amhead",(error,result)=>{
 
-        if(error)
-        {
-res.send("error")
-        }else{
-res.send(result)
-        }
-        console.log(result)
-    })
-
-    
-});
-app.get("/amleft",(req,res)=>{
+app.get('/amleft',async(req,res)=>{
     con.query("Select *from amleft",(error,result)=>{
 
         if(error)
@@ -70,8 +43,42 @@ res.send(result)
 
     
 });
-app.get("/amcenterproduct",(req,res)=>{
+app.get('/amcenterproduct',async(req,res)=>{
     con.query("Select *from amcenterproduct",(error,result)=>{
+
+        if(error)
+        {
+res.send("error")
+        }else{
+res.send(result)
+        }
+        console.log(result)
+    })
+
+    
+});
+app.get('/:key',async(req,res)=>{
+    var id=req.params.key
+    console.log("main")
+    con.query(`Select *from productdb where lower(searchKey) LIKE lower('%${id}%') OR lower(title) LIKE lower('%${id}%')
+    ORDER BY total_reviews DESC LIMIT 30`,(error,result)=>{
+
+        if(error)
+        {   
+res.send("error")
+        }else{
+res.send(result)
+        }
+        console.log(result)
+    })
+
+    
+});
+app.get('/leftPro/:key',async(req,res)=>{
+    var id=req.params.key
+    con.query(`Select *from leftproductdb where lower(searchKey) LIKE lower('%${id}%')
+    OR lower(product_title) LIKE lower('%${id}%') OR lower(product_description) LIKE lower('%${id}%') ORDER BY productNumReviewcpageUrl DESC
+    LIMIT 30`,(error,result)=>{
 
         if(error)
         {
@@ -86,7 +93,13 @@ res.send(result)
 });
 
 
-app.post("/",async(req,res)=>{
+
+
+
+
+
+
+app.post('/',async(req,res)=>{
 
     const dataList = req.body
 //       const datalistCount= dataList.length
@@ -180,4 +193,4 @@ return res.send(error)
 }
 return res.send("Left list of data")
 })
-app.listen(5000)
+app.listen(4500)
