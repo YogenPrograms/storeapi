@@ -14,7 +14,7 @@ let keyenter;
 
 app.get('/amhead',async(req,res)=>{
     console.log("get")
-    con.query("SELECT * FROM amhead",(error,result)=>{
+    con.query("SELECT * FROM amhead ORDER BY RAND() LIMIT 3",(error,result)=>{
 console.log("hi")
         if(error)
         {
@@ -30,7 +30,7 @@ console.log("this is outcou",result)
 });
 
 app.get('/amleft',async(req,res)=>{
-    con.query("Select *from amleft",(error,result)=>{
+    con.query("Select *from amleft ORDER BY RAND() LIMIT 10",(error,result)=>{
 
         if(error)
         {
@@ -44,7 +44,7 @@ res.send(result)
     
 });
 app.get('/amcenterproduct',async(req,res)=>{
-    con.query("Select *from amcenterproduct",(error,result)=>{
+    con.query("Select *from amcenterproduct ORDER BY RAND() LIMIT 20",(error,result)=>{
 
         if(error)
         {
@@ -58,7 +58,8 @@ res.send(result)
     
 });
 app.get('/:key',async(req,res)=>{
-    var id=req.params.key
+    const id=req.params.key
+    keyenter=id
     console.log("main")
     con.query(`Select *from productdb where lower(searchKey) LIKE lower('%${id}%') OR lower(title) LIKE lower('%${id}%')
     ORDER BY total_reviews DESC LIMIT 30`,(error,result)=>{
@@ -101,6 +102,7 @@ res.send(result)
 
 app.post('/',async(req,res)=>{
 
+    try{
     const dataList = req.body
 //       const datalistCount= dataList.length
 //   console.log("count is ",datalistCount)
@@ -117,7 +119,7 @@ app.post('/',async(req,res)=>{
       const url=dataList.result[i].url
   const title=dataList.result[i].title
   const thumbnail=dataList.result[i].thumbnail
-  let searchKey=""+keyenter
+  let searchKey=keyenter
   let company="AMAZON"
 
   const collectProduct={asin,url,title,thumbnail,searchKey,company}
@@ -137,10 +139,15 @@ return res.send(error)
 
 }
 return res.send("list of data")
-})
+}catch(error)
+{
+console.log(error)
+}
+}
+)
 
 app.post('/leftPro',(req,res)=>{
-
+try{
     const mess=req.body
     
     const num=mess.data.length;
@@ -163,7 +170,7 @@ const productNumReviewcpageUrl=mess.data[i].product_num_reviews
  const offer_page_url=mess.data[i].offer.offer_page_url;
  const price=mess.data[i].offer.price;
 
- searchKey=""+keyenter;
+ searchKey=keyenter;
 
 
 const productD={productRating,productpageUrl,productOffpageUrl
@@ -192,5 +199,9 @@ return res.send(error)
 
 }
 return res.send("Left list of data")
+}catch(error)
+{
+    console.log(error)
+}
 })
 app.listen(4500)
