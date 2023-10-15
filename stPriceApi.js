@@ -13,6 +13,7 @@ app.use(cors())
 
 let keyenter;
 
+// Get methods for First page product
 
 app.get('/amhead',async(req,res)=>{
     console.log("get")
@@ -25,14 +26,14 @@ res.send("error")
 res.send(result)
 console.log("this is outcou",result)
         }
-        console.log("this is outcou",result)
+        console.log("Get amhead",result)
     })
 
     
 });
 
-app.get('/amleft',async(req,res)=>{
-    con.query("Select *from amleft ORDER BY RAND() LIMIT 10",(error,result)=>{
+app.get('/amleftcopy',async(req,res)=>{
+    con.query("Select *from amleftcopy ORDER BY RAND() LIMIT 10",(error,result)=>{
 
         if(error)
         {
@@ -41,6 +42,7 @@ res.send("error")
 res.send(result)
         }
         console.log(result)
+        console.log("amleftcopy",result)
     })
 
     
@@ -57,39 +59,57 @@ res.send(result)
         console.log(result)
     })
 
-    
+    console.log("Getamcenterproduct",result)
 });
 
-app.post('/amleft',async(req,res)=>{
+
+// post on First page
+
+app.post('/amleftcopy',(req,res)=>{
     try{
-        const dataList = req.body
-    //       const datalistCount= dataList.length
-    //   console.log("count is ",datalistCount)
-    //       for (let i=0;i<datalistCount;i++)
-    //       {
-    
-         
-    //           const datalistitem=dataList[i]
-        const datalistCount= dataList.result.length
-    
-        for (let i=0;i<datalistCount;i++)
-       {
-          const asin=dataList.result[i].asin
-          const url=dataList.result[i].url
-      const title=dataList.result[i].title
-      const thumbnail=dataList.result[i].thumbnail
-      let searchKey=keyenter
-      let company="AMAZON"
-    
-      const collectProduct={asin,url,title,thumbnail,searchKey,company}
-    
-         const price=dataList.result[i].price
-          const reviews=dataList.result[i].reviews
+        const mess=req.body
         
-          const amazonProducts=Object.assign(collectProduct,price,reviews)
-         console.log("datalist :",amazonProducts)
+        const num=mess.data.length;
     
-       await con.query('INSERT INTO amleft SET ?',amazonProducts,(error, result,fields) =>{
+    for(let i=0;i<num;i++)
+    {
+    const productRating=mess.data[i].product_rating
+    const productpageUrl=mess.data[i].product_page_url
+    const productOffpageUrl=mess.data[i].product_page_url
+     const productSpecpageUrl=mess.data[i].product_specs_page_url
+    const productReviewcpageUrl=mess.data[i].product_reviews_page_url
+    const productNumReviewcpageUrl=mess.data[i].product_num_reviews
+     const productPhoto= mess.data[i].product_photos[0];
+     const product_title= mess.data[i].product_title;
+      const product_description= mess.data[i].product_description;
+    
+    
+      const store_name=mess.data[i].offer.store_name;
+    //  const store_rating=mess.data[i].offer.store_rating;
+     const offer_page_url=mess.data[i].offer.offer_page_url;
+     const price=mess.data[i].offer.price;
+    
+     searchKey=keyenter;
+    
+    
+    const productD={productRating,productpageUrl,productOffpageUrl
+    ,productSpecpageUrl,productReviewcpageUrl,productNumReviewcpageUrl,productPhoto,product_title,
+    product_description,store_name,offer_page_url,price,searchKey}
+    
+    // const productAttri=mess.data[i].product_attributes;
+    
+    
+    
+    // const productTile= mess.data.product_title;
+    // const productDisc= mess.data.product_description;
+    
+    
+    // const productDetails=Object.assign(productD,productAttri,off
+    //     ,productTile,productDisc)
+    
+    console.log("products are:",productD)
+        
+         con.query('INSERT INTO amleftcopy SET ?',productD,(error, result,fields) =>{
             if(error)
             {
     return res.send(error)
@@ -97,13 +117,57 @@ app.post('/amleft',async(req,res)=>{
         })
     
     }
-    return res.send("amleft")
+    return res.send("Left list of data")
     }catch(error)
     {
-    console.log(error)
+        console.log(error)
     }
+    })
 
-})
+// app.post('/amleft',async(req,res)=>{
+//     try{
+//         const dataList = req.body
+//     //       const datalistCount= dataList.length
+//     //   console.log("count is ",datalistCount)
+//     //       for (let i=0;i<datalistCount;i++)
+//     //       {
+    
+         
+//     //           const datalistitem=dataList[i]
+//         const datalistCount= dataList.result.length
+    
+//         for (let i=0;i<datalistCount;i++)
+//        {
+//           const asin=dataList.result[i].asin
+//           const url=dataList.result[i].url
+//       const title=dataList.result[i].title
+//       const thumbnail=dataList.result[i].thumbnail
+//       let searchKey=keyenter
+//       let company="AMAZON"
+    
+//       const collectProduct={asin,url,title,thumbnail,searchKey,company}
+    
+//          const price=dataList.result[i].price
+//           const reviews=dataList.result[i].reviews
+        
+//           const amazonProducts=Object.assign(collectProduct,price,reviews)
+//          console.log("datalist :",amazonProducts)
+    
+//        await con.query('INSERT INTO amleft SET ?',amazonProducts,(error, result,fields) =>{
+//             if(error)
+//             {
+//     return res.send(error)
+//             }
+//         })
+    
+//     }
+//     return res.send("amleft")
+//     }catch(error)
+//     {
+//     console.log(error)
+//     }
+
+// })
 app.post('/amcenterproduct',async(req,res)=>{
 
     try{
@@ -195,6 +259,8 @@ app.post('/amhead',async(req,res)=>{
     
 })
 
+//Get DB products
+
 app.get('/:key',async(req,res)=>{
     const id=req.params.key
     keyenter=id
@@ -209,6 +275,7 @@ res.send("error")
 res.send(result)
         }
         console.log(result)
+        console.log("DB center",result)
     })
 
     
@@ -226,7 +293,8 @@ res.send("error")
         }else{
 res.send(result)
         }
-        console.log(result)
+        console.log("getleftpro",   result)
+        
     })
 
     
@@ -234,10 +302,7 @@ res.send(result)
 
 
 
-
-
-
-
+//Post Product in DB
 
 app.post('/',async(req,res)=>{
 
