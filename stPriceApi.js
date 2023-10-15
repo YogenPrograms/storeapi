@@ -2,6 +2,8 @@ const express= require('express')
 const con=require("./storedb")
 const app= express()
 const cors= require('cors')
+const https = require('https');
+const fs = require('fs');
 
 app.use(express.json({
     limit:'10mb', extended:true
@@ -57,6 +59,142 @@ res.send(result)
 
     
 });
+
+app.post('/amleft',async(req,res)=>{
+    try{
+        const dataList = req.body
+    //       const datalistCount= dataList.length
+    //   console.log("count is ",datalistCount)
+    //       for (let i=0;i<datalistCount;i++)
+    //       {
+    
+         
+    //           const datalistitem=dataList[i]
+        const datalistCount= dataList.result.length
+    
+        for (let i=0;i<datalistCount;i++)
+       {
+          const asin=dataList.result[i].asin
+          const url=dataList.result[i].url
+      const title=dataList.result[i].title
+      const thumbnail=dataList.result[i].thumbnail
+      let searchKey=keyenter
+      let company="AMAZON"
+    
+      const collectProduct={asin,url,title,thumbnail,searchKey,company}
+    
+         const price=dataList.result[i].price
+          const reviews=dataList.result[i].reviews
+        
+          const amazonProducts=Object.assign(collectProduct,price,reviews)
+         console.log("datalist :",amazonProducts)
+    
+       await con.query('INSERT INTO amleft SET ?',amazonProducts,(error, result,fields) =>{
+            if(error)
+            {
+    return res.send(error)
+            }
+        })
+    
+    }
+    return res.send("amleft")
+    }catch(error)
+    {
+    console.log(error)
+    }
+
+})
+app.post('/amcenterproduct',async(req,res)=>{
+
+    try{
+        const dataList = req.body
+    //       const datalistCount= dataList.length
+    //   console.log("count is ",datalistCount)
+    //       for (let i=0;i<datalistCount;i++)
+    //       {
+    
+         
+    //           const datalistitem=dataList[i]
+        const datalistCount= dataList.result.length
+    
+        for (let i=0;i<datalistCount;i++)
+       {
+          const asin=dataList.result[i].asin
+          const url=dataList.result[i].url
+      const title=dataList.result[i].title
+      const thumbnail=dataList.result[i].thumbnail
+      let searchKey=keyenter
+      let company="AMAZON"
+    
+      const collectProduct={asin,url,title,thumbnail,searchKey,company}
+    
+         const price=dataList.result[i].price
+          const reviews=dataList.result[i].reviews
+        
+          const amazonProducts=Object.assign(collectProduct,price,reviews)
+         console.log("datalist :",amazonProducts)
+    
+       await con.query('INSERT INTO amcenterproduct SET ?',amazonProducts,(error, result,fields) =>{
+            if(error)
+            {
+    return res.send(error)
+            }
+        })
+    
+    }
+    return res.send("amcenterproduct")
+    }catch(error)
+    {
+    console.log(error)
+    }
+
+})
+app.post('/amhead',async(req,res)=>{
+
+    try{
+        const dataList = req.body
+    //       const datalistCount= dataList.length
+    //   console.log("count is ",datalistCount)
+    //       for (let i=0;i<datalistCount;i++)
+    //       {
+    
+         
+    //           const datalistitem=dataList[i]
+        const datalistCount= dataList.result.length
+    
+        for (let i=0;i<datalistCount;i++)
+       {
+          const asin=dataList.result[i].asin
+          const url=dataList.result[i].url
+      const title=dataList.result[i].title
+      const thumbnail=dataList.result[i].thumbnail
+      let searchKey=keyenter
+      let company="AMAZON"
+    
+      const collectProduct={asin,url,title,thumbnail,searchKey,company}
+    
+         const price=dataList.result[i].price
+          const reviews=dataList.result[i].reviews
+        
+          const amazonProducts=Object.assign(collectProduct,price,reviews)
+         console.log("datalist :",amazonProducts)
+    
+       await con.query('INSERT INTO amhead SET ?',amazonProducts,(error, result,fields) =>{
+            if(error)
+            {
+    return res.send(error)
+            }
+        })
+    
+    }
+    return res.send("amhead")
+    }catch(error)
+    {
+    console.log(error)
+    }
+    
+})
+
 app.get('/:key',async(req,res)=>{
     const id=req.params.key
     keyenter=id
@@ -78,7 +216,8 @@ res.send(result)
 app.get('/leftPro/:key',async(req,res)=>{
     var id=req.params.key
     con.query(`Select *from leftproductdb where lower(searchKey) LIKE lower('%${id}%')
-    OR lower(product_title) LIKE lower('%${id}%') OR lower(product_description) LIKE lower('%${id}%') ORDER BY productNumReviewcpageUrl DESC
+    OR lower(product_title) LIKE lower('%${id}%') OR lower(product_description) LIKE lower('%${id}%') ORDER BY 
+    Case When store_name IN('Flipkart','Myntra','Amazon.in','Shopsy By Flipkart','Meesho','Hopscotch.in','FirstCry India','eBay','Croma','Reliance Digital','JioMart') THEN 1 ELSE 2 END
     LIMIT 30`,(error,result)=>{
 
         if(error)
